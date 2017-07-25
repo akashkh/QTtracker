@@ -165,6 +165,8 @@ namespace Bot_Application1.Dialogs
 		{
 			DataTable dt = PullData();
 			string[] Sr = dt.AsEnumerable().Select(r => r.Field<string>("SRNumber")).ToArray();
+			DateTime[] Sr1 = dt.AsEnumerable().Select(r => r.Field<DateTime>("SLADateTime")).ToArray();
+			
 			// Create 5 CardAction buttons 
 			// and return to the calling method 
 			List<CardAction> cardButtons = new List<CardAction>();
@@ -174,8 +176,8 @@ namespace Bot_Application1.Dialogs
 				CardAction CardButton = new CardAction()
 				{
 					Type = "imBack",
-					Title = Sr[i].ToString(),
-					Value = Sr[i].ToString()
+					Title = Sr[i].ToString() + " IR @" + Sr1[i].ToString(),
+					Value = Sr[i].ToString() 
 				};
 				cardButtons.Add(CardButton);
 			}
@@ -186,7 +188,7 @@ namespace Bot_Application1.Dialogs
 		public static DataTable PullData()
 		{
 			string connString = "Server=tcp:akashfirstserver.database.windows.net,1433;Initial Catalog=QTtracker; User ID=akashkh;Password=PoloMohit@12345;";
-			string query = "Select SRNumber from SLAdetails where sladatetime > (Select CAST(SWITCHOFFSET(SYSDATETIMEOFFSET(), '+05:30') AS DATETIME))";
+			string query = "Select SRNumber, SLADateTime from SLAdetails where sladatetime > (Select CAST(SWITCHOFFSET(SYSDATETIMEOFFSET(), '+05:30') AS DATETIME) ) and isActive = 1 order by sladatetime";
 
 			SqlConnection conn = new SqlConnection(connString);
 			SqlCommand cmd = new SqlCommand(query, conn);
